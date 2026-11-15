@@ -2,7 +2,8 @@
 // There is no settings screen: this app never changes a radio's configuration.
 (function () {
   'use strict';
-  const APP_VERSION = '1.0.0';
+  const APP_VERSION = '1.0.1';
+  const GUIDE_URL = 'Aux%20Tracker%20Guide.pdf';     // built by tools/make_guide.py
   const $ = (id) => document.getElementById(id);
   const BROADCAST = Radio.BROADCAST;
 
@@ -551,6 +552,7 @@
       h('p', { class: 'muted small', text: 'A position every 10 seconds is a lot of radio traffic. It suits a private aux channel with a handful of radios; on a busy public mesh it would crowd out other stations. The radio will not accept positions from a phone any faster than this.' }),
       h('p', { class: 'muted small', text: 'Android: open in Chrome. iPhone: open in the Bluefy browser (Safari cannot use Bluetooth radios). Allow location when asked.' }),
       h('p', { class: 'muted small', text: 'Messages are stored only on this phone. Map tiles © Esri. Meshtastic® is a registered trademark of Meshtastic LLC; this app is independent and not affiliated with or endorsed by the Meshtastic project.' }),
+      h('a', { class: 'btn wide', href: GUIDE_URL, target: '_blank', rel: 'noopener', text: 'Open the user guide (PDF)' }),
       h('button', { class: 'wide', text: 'Show the disclaimer', onclick: () => window.showDisclaimer && window.showDisclaimer() })));
   }
 

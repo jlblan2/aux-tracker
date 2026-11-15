@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!-- Screenshot helper for tools/make_guide.py: shows one screen of the app (demo radio,
+     pretend GPS) so headless Edge can photograph it. Open as tools/shot.html?tab=tracker -->
+<html><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>html,body{margin:0;height:100%;background:#0a1929}iframe{border:0;width:390px;height:800px;display:block}</style>
+</head><body>
+<script>
+localStorage.setItem('disclaimer.Aux Tracker.v1', 'accepted');
+const tab = new URLSearchParams(location.search).get('tab') || 'tracker';
+const f = document.createElement('iframe');
+f.src = '../index.html';
+document.body.appendChild(f);
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+f.onload = async () => {
+  const w = f.contentWindow, d = f.contentDocument;
+  if (tab === 'connect') return;
+  // a boat moving west at about 12 knots
+  let n = 0;
+  const geo = {
+    watchPosition(ok) {
+      return w.setInterval(() => {
+        n++;
+        ok({ coords: { latitude: 27.9506543, longitude: -82.4567891 - n * 0.00006, altitude: 3.7, accuracy: 4.2,
+          altitudeAccuracy: 6, heading: 271.3, speed: 6.17 }, timestamp: Date.now() });
+      }, 1000);
+    },
+    clearWatch(id) { w.clearInterval(id); },
+  };
+  Object.defineProperty(w.navigator, 'geolocation', { value: geo, configurable: true });
+  const demo = () => Array.from(d.querySelectorAll('#tab-radio button')).find((b) => b.textContent.includes('demo')).click();
+  const connected = async () => { for (let i = 0; i < 40 && w.Radio.state !== 'connected'; i++) await wait(250); };
+  demo();
+  await connected();
+  if (tab === 'notaux') {
+    await w.Radio.disconnect();
+    w.DemoTransport.peek().channels[0].settings.name = 'LongFast';
+    demo();
+    await connected();
+    await wait(1500);
+    return;
+  }
+  await wait(13000);                       // two positions sent
+  if (tab === 'paused') {
+    w.Tracker.setPaused(true);
+  } else if (tab === 'messages') {
+    w.MeshApp.showTab('messages');
+    d.getElementById('msgInput').value = 'Underway, tracker running.';
+    d.getElementById('msgForm').requestSubmit();
+    await wait(2000);
+    d.getElementById('toast').hidden = true;
+  } else if (tab !== 'tracker') {
+    w.MeshApp.showTab(tab);
+  }
+  await wait(300);
+  d.getElementById('toast').hidden = true;
+};
+</script>
+</body></html>

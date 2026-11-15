@@ -1,7 +1,7 @@
 // Offline cache for the app's own files (and the map library). Map tiles are
 // never cached: they are only useful online and would fill the phone.
 // Bump CACHE whenever any file below changes.
-const CACHE = 'auxtracker-v1';
+const CACHE = 'auxtracker-v2';
 const ASSETS = [
   './',
   './index.html',
